@@ -1,66 +1,130 @@
-﻿#### 说明
+# ZeroTier-OpenWrt
 
-* 软件不定期同步大神库更新，适合一键下载到package目录下，用于openwrt编译
+*ZeroTier has been merged into the official package repository and can be selected using the opkg package management tool.*
 
+[ZeroTier One](https://www.zerotier.com) is a program to create a global provider-independent virtual private cloud.
+This project offers OpenWrt packages for ZeroTier.
 
-* 两位L大库里都删除了某软件，作为搬运工，passwall的依赖一并找齐了
+## Installing package
 
+Download the [prebuild package](https://github.com/mwarning/zerotier-openwrt/releases) and copy it onto your OpenWrt installation, preferably into the /tmp folder.
 
-- [passwall依赖库下载链接，注意！在openwrt或者lean源码下编译passwall，要下载此依赖库](https://github.com/kenzok8/small.git)
- 
+Then install the ipk package file:
 
-1、 lede/package$下运行 或者openwrt/package$下运行
-
-```bash
- git clone https://github.com/kenzok8/openwrt-packages.git
 ```
- 2、 或者添加下面代码到 openwrt 或lede源码根目录feeds.conf.default文件
-```bash
- src-git kenzo https://github.com/kenzok8/openwrt-packages
+opkg install zerotier_*.ipk
 ```
- 3、 passwall依赖
- ```bash
- src-git small https://github.com/kenzok8/small
- ```
- 
-- openwrt 固件编译自定义主题与软件
-- luci-app-openclash       ------------------openclash图形         
-- luci-app-advancedsetting ------------------系统高级设置
-- luci-theme-atmaterial    ------------------atmaterial 三合一主题（适配18.06）     
-- luci-app-aliddns         ------------------阿里云ddns
-- luci-theme-argon-dark-new------------------适配19.07与18.06的主题
-- luci-app-eqos            ------------------依IP地址限速
-- luci-app-gost            ------------------隐蔽的https代理
-- luci-app-adguardhome     ------------------去广告 
-- luci-app-smartdns        ------------------smartdns防污染
-- luci-app-passwall        ------------------Lienol大神 
-- luci-theme-argon_new     ------------------适配19.07与18.06的主题
-- luci-app-ssr-plus        ------------------Lean大神 
-- luci-theme-opentomcat    ------------------修复主机名错误（适配18.06）  
-- luci-theme-opentomato    ------------------修复主机名错误（适配18.06）
-#### 注意
 
-* Lean大近期修改源码后，主题适配！
+Now start ZeroTier:
 
+```
+/etc/init.d/zerotier start
+```
 
+## Compiling from Sources
 
-![暗黄主题](https://raw.githubusercontent.com/kenzok8/openwrt-packages/master/screenshot/sshot-9.jpg)
-![暗黄主题](https://raw.githubusercontent.com/kenzok8/openwrt-packages/master/screenshot/sshot-10.jpg)
-![暗黄主题](https://raw.githubusercontent.com/kenzok8/openwrt-packages/master/screenshot/sshot-11.jpg)
-![暗黑红主题](https://raw.githubusercontent.com/kenzok8/openwrt-packages/master/screenshot/sshot-5.jpg)
-![暗黑红主题](https://raw.githubusercontent.com/kenzok8/openwrt-packages/master/screenshot/sshot-6.jpg)
-![暗黑红主题](https://raw.githubusercontent.com/kenzok8/openwrt-packages/master/screenshot/sshot-7.jpg)
-![暗黑红主题](https://raw.githubusercontent.com/kenzok8/openwrt-packages/master/screenshot/sshot-8.jpg)
-![抹茶绿主题](https://raw.githubusercontent.com/kenzok8/openwrt-packages/master/screenshot/sshot-12.jpg)
-![抹茶绿主题](https://raw.githubusercontent.com/kenzok8/openwrt-packages/master/screenshot/sshot-13.jpg)
-![抹茶绿主题](https://raw.githubusercontent.com/kenzok8/openwrt-packages/master/screenshot/sshot-14.jpg)
-![argon主题](https://raw.githubusercontent.com/kenzok8/openwrt-packages/master/screenshot/sshot-1.jpg)
-![argon主题](https://raw.githubusercontent.com/kenzok8/openwrt-packages/master/screenshot/sshot-2.jpg)
-![argon主题](https://raw.githubusercontent.com/kenzok8/openwrt-packages/master/screenshot/sshot-3.jpg)
-![argon主题](https://raw.githubusercontent.com/kenzok8/openwrt-packages/master/screenshot/sshot-4.jpg)
-* 修复opentomato 与opentomcat修改主机名无效的bug
-![修复tomto不能修改主机名的bug](https://raw.githubusercontent.com/kenzok8/openwrt-packages/master/screenshot/%E5%B0%8F%E7%8C%AA%E5%AE%B6-719.png)
-![修复tomto不能修改主机名的bug](https://raw.githubusercontent.com/kenzok8/openwrt-packages/master/screenshot/%E5%B0%8F%E7%8C%AA%E5%AE%B6-722.png)
-![修复cat不能修改主机名的bug](https://raw.githubusercontent.com/kenzok8/openwrt-packages/master/screenshot/%E5%B0%8F%E7%8C%AA%E5%AE%B6-720.png)
-![修复cat不能修改主机名的bug](https://raw.githubusercontent.com/kenzok8/openwrt-packages/master/screenshot/%E5%B0%8F%E7%8C%AA%E5%AE%B6-721.png)
+To include ZeroTier One into your OpenWrt image or to create
+an .ipk package (equivalent to Debians .deb files),
+you have to build an OpenWrt image.
 
+To build OpenWrt on Debian, you need to install these packages:
+
+```
+sudo apt-get install subversion g++ zlib1g-dev build-essential git python
+sudo apt-get install libncurses5-dev gawk gettext unzip file libssl-dev wget
+```
+
+Now prepare OpenWrt:
+
+```
+git clone https://github.com/openwrt/openwrt
+cd openwrt
+
+./scripts/feeds update -a
+./scripts/feeds install -a
+```
+
+Now you can insert the zerotier package using a package feed or add the package manually.
+
+### Add package by feed
+
+A feed is the standard way packages are made available to the OpenWrt build system.
+
+Put this line in your feeds list file (e.g. feeds.conf.default)
+
+```
+src-git zerotier https://github.com/mwarning/zerotier-openwrt.git
+```
+
+Update and install the new feed
+
+```
+./scripts/feeds update zerotier
+./scripts/feeds install zerotier
+```
+
+Now continue with the building packages section.
+
+### Add package by hand
+
+```
+git clone https://github.com/mwarning/zerotier-openwrt.git
+cp -rf zerotier-openwrt/zerotier package/
+rm -rf zerotier-openwrt/
+```
+
+Now continue with the building packages section.
+
+### Building Packages
+
+Configure packages:
+
+```
+make menuconfig
+```
+
+Now select the appropiate "Target System" and "Target Profile"
+depending on what target chipset/router you want to build for.
+Also mark the ZeroTier package under Network ---> VPN ---> <\*> zerotier.
+
+Now compile/build everything:
+
+```
+make
+```
+
+The images and all \*.ipk packages are now inside the bin/ folder, including the zerotier package.
+You can install the ZeroTier .ipk on the target device using `opkg install <ipkg-file>`.
+
+For details please check the OpenWrt documentation.
+
+#### Build bulk packages
+
+For a release, it is useful the build packages at a bulk for multiple targets:
+
+```
+#!/bin/sh
+
+# dumpinfo.pl is used to get all targets configurations:
+# https://git.openwrt.org/?p=buildbot.git;a=blob;f=phase1/dumpinfo.pl
+
+./dumpinfo.pl architectures | while read pkgarch target1 rest; do
+  echo "CONFIG_TARGET_${target1%/*}=y" > .config
+  echo "CONFIG_TARGET_${target1%/*}_${target1#*/}=y" >> .config
+  echo "CONFIG_PACKAGE_example1=y" >> .config
+
+  # Debug output
+  echo "pkgarch: $pkgarch, target1: $target1"
+
+  make defconfig
+  make -j4 tools/install
+  make -j4 toolchain/install
+
+  # Build package
+  make package/zerotier/{clean,compile}
+
+  # Free space (optional)
+  rm -rf build_dir/target-*
+  rm -rf build_dir/toolchain-*
+done
+```
